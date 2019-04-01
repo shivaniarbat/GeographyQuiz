@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".QuizQuestionsFragment">
+
+    <ScrollView
+        android:id="@+id/questionsFragmentScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/map"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="383dp"
+                android:layout_height="95dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:src="@drawable/questions" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="Select Correct Answers to gain points ! " />
+
+            <LinearLayout
+                android:id="@+id/question1LinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical"
+                android:layout_margin="10dp"
+                android:alpha="0.7"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/continentQuestionTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:textColor="@color/colorWhite"
+                    android:fontFamily="cursive"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:text="Select the Continent and Neighbour/s of India from below options." />
+
+                <LinearLayout
+                    android:id="@+id/question1OptionsTextLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp">
+
+                    <LinearLayout
+                        android:id="@+id/question1ABCTEXTLinearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorAccent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/continentOptionATEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="A" />
+
+                        <TextView
+                            android:id="@+id/continentOptionBTEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="B" />
+
+                        <TextView
+                            android:id="@+id/continentOptionCTEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="C" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/question1ABCOPTIONSLinearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:orientation="vertical">
+
+                        <RadioGroup
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <RadioButton
+                                android:id="@+id/continentOptionA"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="@string/past_quiz_summary"/>
+
+                            <RadioButton
+                                android:id="@+id/continentOptionB"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="@string/past_quiz_summary"/>
+
+                            <RadioButton
+                                android:id="@+id/continentOptionC"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="@string/past_quiz_summary"/>
+                        </RadioGroup>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/question2LinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical"
+                android:layout_margin="10dp"
+                android:alpha="0.7"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/neighbourQuestionTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:textColor="@color/colorWhite"
+                    android:fontFamily="cursive"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:text="Select Neighbour/s of India from below options." />
+
+                <LinearLayout
+                    android:id="@+id/question2OptionsTextLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp">
+
+                    <LinearLayout
+                        android:id="@+id/question2ABCTEXTLinearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorAccent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/neighbourOptionATEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="A" />
+
+                        <TextView
+                            android:id="@+id/neighbourOptionBTEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="B" />
+
+                        <TextView
+                            android:id="@+id/neighbourOptionCTEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="C" />
+
+                        <TextView
+                            android:id="@+id/neighbourOptionDTEXTTextView"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:textColor="@color/colorWhite"
+                            android:fontFamily="cursive"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="D" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/question2ABCOPTIONSLinearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:orientation="vertical">
+
+                        <RadioGroup
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <RadioButton
+                                android:id="@+id/neighbourOptionA"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="@string/past_quiz_summary"/>
+
+                            <RadioButton
+                                android:id="@+id/neighbourOptionB"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="@string/past_quiz_summary"/>
+
+                            <RadioButton
+                                android:id="@+id/neighbourOptionC"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="@string/past_quiz_summary"/>
+
+                            <RadioButton
+                                android:id="@+id/neighbourOptionD"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorWhite"
+                                android:fontFamily="cursive"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:text="No Neighbour"/>
+                        </RadioGroup>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/swipeQuestionsStatusTextView"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="1 / 6 " />
+
+            <TextView
+                android:id="@+id/swipeInstructionsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="Swipe Left or Right " />
+
+            <TextView
+                android:id="@+id/quizInfoTextView"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:textColor="@color/colorWhite"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="####" />
+
+            <TextView
+                android:id="@+id/quizInfo2TextView"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:textColor="@color/colorWhite"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="10sp"
+                android:text="####" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
