@@ -1,13 +1,21 @@
 package cs.uga.edu.geographyquiz;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+
+import com.opencsv.CSVReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
 
 public class HomePageActivity extends AppCompatActivity {
 
@@ -16,6 +24,8 @@ public class HomePageActivity extends AppCompatActivity {
     public String DEBUG_TAG = "HomePageActivity";
 
     private GeographyQuizData geographyQuizData = null;
+    HashMap<String, String> countryContinentHashMap = new HashMap<>();
+    HashMap<String, String> countryNeighbourHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +43,17 @@ public class HomePageActivity extends AppCompatActivity {
         newQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // newQuiz.setBackgroundColor(getResources().getColor(R.color.colorWhite));
-//                Intent quizQuestions = new Intent(HomePageActivity.this,QuizQuestions.class);
-//                startActivity(quizQuestions);
+                /* write logic to load data into table */
+                // check if table is empty then insert data for the first time
+                List<CountryContinentNeighbourTableEntry> entriesInTable = geographyQuizData.retrieveAllCountryEntries();
+                if(entriesInTable.size() == 0) {
+                    insertDataInDatabase();
+                }
 
-                CountryContinentNeighbourTableEntry tableEntry = new CountryContinentNeighbourTableEntry("US","What is/are continent and neightbours of India","North America","Canada,Mexico");
-                Log.d( DEBUG_TAG, "Table entry going to writer task: " + tableEntry );
+                /* start new activity */
+                Intent quizQuestions = new Intent(HomePageActivity.this,QuizQuestions.class);
+                startActivity(quizQuestions);
 
-                // Store this new job lead in the database asynchronously,
-                // without blocking the UI thread.
-                new JobLeadDBWriterTask().execute( tableEntry );
 
             }
         });
@@ -74,8 +85,8 @@ public class HomePageActivity extends AppCompatActivity {
             super.onPostExecute( countryContinentNeighbourTableEntry );
 
             // Show a quick confirmation
-            Toast.makeText( getApplicationContext(), "Job lead created for " + countryContinentNeighbourTableEntry.getCountryName(),
-                    Toast.LENGTH_SHORT).show();
+            /* Toast.makeText( getApplicationContext(), "Entry created for " + countryContinentNeighbourTableEntry.getCountryName(),
+                    Toast.LENGTH_SHORT).show(); */
 
 
             Log.d( DEBUG_TAG, "Country saved: " + countryContinentNeighbourTableEntry );
@@ -96,5 +107,62 @@ public class HomePageActivity extends AppCompatActivity {
         if( geographyQuizData != null )
             geographyQuizData.close();
         super.onPause();
+    }
+
+    protected void insertDataInDatabase(){
+        Resources res = getResources();
+        InputStream countryContinentInputStream = res.openRawResource(R.raw.country_continent);
+        InputStream countryNeighbourInputStream = res.openRawResource(R.raw.country_neighbors);
+        // read the CSV data
+        CSVReader countryContinentReader = new CSVReader(new InputStreamReader(countryContinentInputStream));
+        CSVReader countryNeighbourReader = new CSVReader(new InputStreamReader(countryNeighbourInputStream));
+        String[] nextLine;
+
+        try {
+            /* populate hashmap for country continent data */
+            while ((nextLine = countryContinentReader.readNext()) != null) {
+                Log.e("The Result is", nextLine[1]);
+                countryContinentHashMap.put(nextLine[0], nextLine[1]);
+            }
+
+            /* populate hashmap for country neighbour data */
+            while ((nextLine = countryNeighbourReader.readNext()) != null) {
+                String newValue = "";
+                boolean firstNeighbour = true;
+
+                for(int i = 1; i < nextLine.length; i++){
+                    if(firstNeighbour){
+                        newValue = nextLine[i];
+                        firstNeighbour = false;
+                    } else {
+                        if(!nextLine[i].isEmpty()){
+                            newValue = newValue + ";" + nextLine[i];
+                        }
+                    }
+                }
+
+                if(newValue.isEmpty()){
+                    newValue = "No Neighbour";
+                }
+
+                countryNeighbourHashMap.put(nextLine[0],newValue);
+                System.out.println("ENtry DONE: "  + nextLine[0] + newValue);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (NullPointerException e){
+            System.out.println("here");
+        }
+
+        /* update table from the hashmaps */
+        /* get country names from hashmap countryContinentHashMap */
+
+        /* country name ; question ; continent ; neoghbour */
+        /* new CountryContinentNeighbourTableEntry("US","What is/are continent and neightbours of India","North America","Canada,Mexico"); */
+
+        for(String countryName :countryContinentHashMap.keySet()){
+            new JobLeadDBWriterTask().execute( new CountryContinentNeighbourTableEntry(countryName,"Select CONTINENT & NEIGHBOUR for " + countryName + " from below.",countryContinentHashMap.get(countryName),countryNeighbourHashMap.get(countryName)) );
+        }
+
     }
 }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
+    protected String DEBUG_TAG = "MainActivity";
     private static int SPLASH_TIME_OUT = 4000;
 
     @Override
