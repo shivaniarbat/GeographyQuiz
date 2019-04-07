@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragmentXML"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,6 +13,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/mainLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/map"
@@ -20,8 +22,8 @@
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="225dp"
-                android:layout_height="95dp"
+                android:layout_width="178dp"
+                android:layout_height="62dp"
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:src="@drawable/questions" />
@@ -314,16 +316,14 @@
                 android:textSize="20sp"
                 android:text="Swipe Left or Right " />
 
-            <TextView
-                android:id="@+id/quizInfoTextView"
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:textColor="@color/colorWhite"
-                android:fontFamily="cursive"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="20sp"
-                android:text="####" />
+
+
+            <Button
+                android:id="@+id/goToMainPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Button" />
 
             <TextView
                 android:id="@+id/quizInfo2TextView"
