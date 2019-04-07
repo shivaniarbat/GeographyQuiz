@@ -16,14 +16,23 @@ public class GeographyQuizData {
 
     // this is a reference to our database; it is used later to run SQL commands
     private SQLiteDatabase db;
-    private boolean DEBUG = false;
     private SQLiteOpenHelper geographyQuizDBHelper;
     private static final String[] allColumns = {
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_AUTOINC,
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_COUNTRY,
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_QUESTION,
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_CONTINENT,
-            GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_NEIGHBOURS
+            GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_NEIGHBOURS,
+            //for quiz result
+            GeographyQuizDBHelper.QUIZ_RESULT_ID,
+            GeographyQuizDBHelper.QUIZ_DATE,
+            GeographyQuizDBHelper.QUIZ_QUESTION_ID1,
+            GeographyQuizDBHelper.QUIZ_QUESTION_ID2,
+            GeographyQuizDBHelper.QUIZ_QUESTION_ID3,
+            GeographyQuizDBHelper.QUIZ_QUESTION_ID4,
+            GeographyQuizDBHelper.QUIZ_QUESTION_ID5,
+            GeographyQuizDBHelper.QUIZ_QUESTION_ID6,
+            GeographyQuizDBHelper.QUIZ_SCORE
     };
 
     public GeographyQuizData( Context context ){
@@ -108,45 +117,5 @@ public class GeographyQuizData {
         Log.d( DEBUG_TAG, "Stored new job lead with id: " + String.valueOf( countryContinentNeighbourTableEntry.getId() ) );
 
         return countryContinentNeighbourTableEntry;
-    }
-
-
-    // Retrieve all job leads and return them as a List.
-    // This is how we restore persistent objects stored as rows in the job leads table in the database.
-    // For each retrieved row, we create a new JobLead (Java POJO object) instance and add it to the list.
-    public List<String> retrieveAllCountryNames() {
-        ArrayList<String> countryEntries = new ArrayList<>();
-        Cursor cursor = null;
-
-        try {
-            // Execute the select query and get the Cursor to iterate over the retrieved rows
-            cursor = db.query( GeographyQuizDBHelper.TABLE_PARENT_COUNTRY_CONTINENT_NEIGHBOUR, allColumns,
-                    null, null, null, null, null );
-            // collect all job leads into a List
-            if( cursor.getCount() > 0 ) {
-                while( cursor.moveToNext() ) {
-                    long id = cursor.getLong( cursor.getColumnIndex( GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_AUTOINC ) );
-                    String countryName = cursor.getString( cursor.getColumnIndex( GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_COUNTRY ) );
-                    String question = cursor.getString( cursor.getColumnIndex( GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_QUESTION ) );
-                    String continent = cursor.getString( cursor.getColumnIndex( GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_CONTINENT ) );
-                    String neighbours = cursor.getString( cursor.getColumnIndex( GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_NEIGHBOURS ) );
-                    CountryContinentNeighbourTableEntry countryContinentNeighbourTableEntry = new CountryContinentNeighbourTableEntry( countryName, question, continent, neighbours );
-                    countryContinentNeighbourTableEntry.setId( id );
-                    countryEntries.add( countryContinentNeighbourTableEntry.getCountryName() );
-                    //Log.d( DEBUG_TAG, "Retrieved CountryContinentNeighbourTableEntry: " + countryContinentNeighbourTableEntry );
-                }
-            }
-            //Log.d( DEBUG_TAG, "Number of records from DB: " + cursor.getCount() );
-        }
-        catch( Exception e ){
-            Log.d( DEBUG_TAG, "Exception caught: " + e );
-        }
-        finally{
-            // we should close the cursor
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return countryEntries;
     }
 }
