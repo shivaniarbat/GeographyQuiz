@@ -152,7 +152,7 @@ public class GeographyQuizData {
 
     // Store a new job lead in the database.
     public static QuizResultTableEntry storequizEntry( QuizResultTableEntry quizResultTableEntry ) {
-
+        boolean DEBUG = true;
         // Prepare the values for all of the necessary columns in the table
         // and set their values to the variables of the JobLead argument.
         // This is how we are providing persistence to a JobLead (Java object) instance
@@ -168,6 +168,17 @@ public class GeographyQuizData {
         values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID6, quizResultTableEntry.getQ6());
         values.put(GeographyQuizDBHelper.QUIZ_DATE, Calendar.getInstance().getTime().toString());
         values.put(GeographyQuizDBHelper.QUIZ_SCORE, quizResultTableEntry.getScore());
+
+
+        if(DEBUG) {
+            System.out.println("QUIZ ENTRY: Q1:" + quizResultTableEntry.getQ1() + ";");
+            System.out.println("QUIZ ENTRY: Q2:" + quizResultTableEntry.getQ2()+ ";");
+            System.out.println("QUIZ ENTRY: Q3:" + quizResultTableEntry.getQ3()+ ";");
+            System.out.println("QUIZ ENTRY: Q4:" + quizResultTableEntry.getQ4()+ ";");
+            System.out.println("QUIZ ENTRY: Q5:" + quizResultTableEntry.getQ5()+ ";");
+            System.out.println("QUIZ ENTRY: Q6:" + quizResultTableEntry.getQ6()+ ";");
+            System.out.println("QUIZ ENTRY SCORE:" + quizResultTableEntry.getScore() + ";");
+        }
 
 
         long id = db.insert( GeographyQuizDBHelper.TABLE_QUIZ_RESULT,null, values );

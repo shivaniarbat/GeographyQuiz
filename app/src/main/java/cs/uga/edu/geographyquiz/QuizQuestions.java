@@ -67,6 +67,7 @@ public class QuizQuestions extends AppCompatActivity {
     public static String thirdNeighbourOption;
     public static int quizScore = 0;
     public static int[] saveInstanceStateRandomSelections;
+    public static ArrayList<String> listofNeighboursList = new ArrayList<>();
 
 
     @Override
@@ -134,28 +135,13 @@ public class QuizQuestions extends AppCompatActivity {
             /* select two random neighbours other than correct one */
             neighbourFlag = true;
             listOfNeighbours = randomCorrectNeighbours[i].split(";");
+            for(int idx = 0 ;idx < listOfNeighbours.length; idx++){
+                listofNeighboursList.add(listOfNeighbours[idx]);
+            }
+
             System.out.println("LIST OF NEIGHBOURS:" + Arrays.toString(listOfNeighbours));
-//            while (neighbourFlag) {
-//                randomNeighbourId = generateRandomInteger(2, 1, 195);
-//
-//                if (Arrays.asList(listOfNeighbours).contains("No Neighbour")) {
-//                    neighbourFlag = true;
-//                } else {
-//                    if (Arrays.asList(listOfNeighbours).contains(countryNames.get(randomNeighbourId[0] - 1))
-//                            || Arrays.asList(listOfNeighbours).contains(countryNames.get(randomNeighbourId[1] - 1))
-//                        // || Arrays.asList(listOfNeighbours).contains("No Neighbour")
-//                    ) { // if either of the neighbour is present in the randomly selected neighbours
-//                        neighbourFlag = true;
-//                    } else {
-//
-//                        otherNeighbourOptions[i][0] = countryNames.get(randomNeighbourId[0] - 1);
-//                        otherNeighbourOptions[i][1] = countryNames.get(randomNeighbourId[1] - 1);
-//                        neighbourFlag = false;
-//                    }
-//                }
-//
-//            }
-            while (neighbourFlag){
+
+           /* while (neighbourFlag){
                 randomNeighbourId = generateRandomInteger(2,1,195);
                 for(int idx = 0;idx < listOfNeighbours.length ; idx++ ){
                     if(listOfNeighbours[idx].equals(countryNames.get(randomNeighbourId[0] - 1))
@@ -164,9 +150,11 @@ public class QuizQuestions extends AppCompatActivity {
                     ){
                         neighbourFlag = true;
                     } else {
-                        if(!countryNames.get(randomNeighbourId[0] - 1).equals("No Neighbour"))
+//                        if(!countryNames.get(randomNeighbourId[0] - 1).equals("No Neighbour"))
+                        if(!listOfNeighbours[idx].equals("No Neighbour"))
                         otherNeighbourOptions[i][0] = countryNames.get(randomNeighbourId[0] - 1);
 
+//                        if(!countryNames.get(randomNeighbourId[1] - 1).equals("No Neighbour"))
                         if(!countryNames.get(randomNeighbourId[1] - 1).equals("No Neighbour"))
                         otherNeighbourOptions[i][1] = countryNames.get(randomNeighbourId[1] - 1);
 
@@ -187,7 +175,35 @@ public class QuizQuestions extends AppCompatActivity {
                     }
                 }
 
-            }
+            }*/
+
+           while(neighbourFlag){
+               randomNeighbourId = generateRandomInteger(2,1,195);
+               if(listofNeighboursList.contains(countryNames.get(randomNeighbourId[0] - 1))
+                       && listofNeighboursList.contains(countryNames.get(randomNeighbourId[1] - 1))
+               ){
+                 neighbourFlag= true;
+               } else {
+                   otherNeighbourOptions[i][0] = countryNames.get(randomNeighbourId[0] - 1);
+                   otherNeighbourOptions[i][1] = countryNames.get(randomNeighbourId[1] - 1);
+
+                   if(randomCorrectNeighbours[i].trim().equals("No Neighbour")){
+                       int[] randomNumber;
+                       while(true){
+                           randomNeighbourId = generateRandomInteger(1,1,195);
+                           if(otherNeighbourOptions[i][0].equals(countryNames.get(randomNeighbourId[0] - 1))
+                                   || otherNeighbourOptions[i][1].equals(countryNames.get(randomNeighbourId[0] - 1))){
+
+                           } else {
+                               thirdNeighbourOption = countryNames.get(randomNeighbourId[0] - 1);
+                               break;
+                           }
+                       }
+                   }
+
+                   neighbourFlag = false;
+               }
+           }
 
         }
 
@@ -217,6 +233,21 @@ public class QuizQuestions extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onResume() {
+        Log.d( DEBUG_TAG, "QuizQuestions.onResume()" );
+        if( geographyQuizData != null )
+            geographyQuizData.open();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d( DEBUG_TAG, "QuizQuestions.onPause()" );
+        if( geographyQuizData != null )
+            geographyQuizData.close();
+        super.onPause();
+    }
 
     public int[] generateRandomInteger(int sizeOfArray, int startIndex, int lastIndex){
         int[] randomIntegers = new int[sizeOfArray];
@@ -306,6 +337,7 @@ public class QuizQuestions extends AppCompatActivity {
         private RadioButton neighbourOptionA;
         private RadioButton neighbourOptionB;
         private RadioButton neighbourOptionC;
+        private RadioButton neighbourOptionD;
         private TextView swipeQuestionsStatusTextView;
         private Button goToMainPage;
         private ScrollView questionsFragmentScrollView;
@@ -355,6 +387,7 @@ public class QuizQuestions extends AppCompatActivity {
             neighbourOptionA = rootView.findViewById(R.id.neighbourOptionA);
             neighbourOptionB = rootView.findViewById(R.id.neighbourOptionB);
             neighbourOptionC = rootView.findViewById(R.id.neighbourOptionC);
+            neighbourOptionD = rootView.findViewById(R.id.neighbourOptionD);
 
             swipeQuestionsStatusTextView = rootView.findViewById(R.id.swipeQuestionsStatusTextView);
             goToMainPage = rootView.findViewById(R.id.goToMainPage);
@@ -373,19 +406,19 @@ public class QuizQuestions extends AppCompatActivity {
                             break;
                         case R.id.continentOptionA:
                             if (continentOptionA.getText().toString().trim().equals(randomCorrectContinents[mImageNum - 1])) {
-                                System.out.println("CORRECT CONTINENT ANSWER SELECTED : " + continentOptionA.getText());
+                                System.out.println("CORRECT ANSWER CONTINENT SELECTED : " + continentOptionA.getText());
                                 quizScore++;
                             }
                             break;
                         case R.id.continentOptionB:
                             if (continentOptionB.getText().toString().trim().equals(randomCorrectContinents[mImageNum - 1])) {
-                                System.out.println("CORRECT CONTINENT ANSWER SELECTED : " + continentOptionB.getText());
+                                System.out.println("CORRECT ANSWER CONTINENT SELECTED : " + continentOptionB.getText());
                                 quizScore++;
                             }
                             break;
                         case R.id.continentOptionC:
                             if (continentOptionC.getText().toString().trim().equals(randomCorrectContinents[mImageNum - 1])) {
-                                System.out.println("CORRECT CONTINENT ANSWER SELECTED : " + continentOptionC.getText());
+                                System.out.println("CORRECT ANSWER CONTINENT SELECTED : " + continentOptionC.getText());
                                 quizScore++;
                             }
                             break;
@@ -402,27 +435,38 @@ public class QuizQuestions extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
 
+                    listOfNeighbours = randomCorrectNeighbours[mImageNum - 1].split(";");
                     ArrayList correctNeighboursInListerner = new ArrayList();
                     for (int j = 0; j < listOfNeighbours.length; j++) {
                         correctNeighboursInListerner.add(listOfNeighbours[j]);
                     }
 
+                    System.out.println("CORRECT ANSWER LIST FOR NEIGHBOURS TO CHECK THROUGH:" + correctNeighboursInListerner.toString());
                     switch ((checkedId)) {
                         case -1:
                             Log.e(DEBUG_TAG, "neighbours choices are cleared");
                             break;
                         case R.id.neighbourOptionA:
                             if (correctNeighboursInListerner.contains(neighbourOptionA.getText().toString().trim())) {
+                                System.out.println("CORRECT ANSWER NEIGHBOUR SELECTED : " + neighbourOptionA.getText());
                                 quizScore++;
                             }
                             break;
                         case R.id.neighbourOptionB:
                             if (correctNeighboursInListerner.contains(neighbourOptionB.getText().toString().trim())) {
+                                System.out.println("CORRECT ANSWER NEIGHBOUR SELECTED : " + neighbourOptionB.getText());
                                 quizScore++;
                             }
                             break;
                         case R.id.neighbourOptionC:
                             if (correctNeighboursInListerner.contains(neighbourOptionC.getText().toString().trim())) {
+                                System.out.println("CORRECT ANSWER NEIGHBOUR SELECTED : " + neighbourOptionC.getText());
+                                quizScore++;
+                            }
+                            break;
+                        case R.id.neighbourOptionD:
+                            if (correctNeighboursInListerner.contains(neighbourOptionD.getText().toString().trim())) {
+                                System.out.println("CORRECT ANSWER NEIGHBOUR SELECTED : " + neighbourOptionD.getText());
                                 quizScore++;
                             }
                             break;
@@ -476,12 +520,15 @@ public class QuizQuestions extends AppCompatActivity {
                     if (randomCorrectNeighbours[mImageNum - 1].trim().equals("No Neighbour")) {
                         neighboursOptions.add(thirdNeighbourOption);
                     } else {
+                        listOfNeighbours = randomCorrectNeighbours[mImageNum - 1].split(";");
                         ArrayList correctNeighbours = new ArrayList();
                         for (int j = 0; j < listOfNeighbours.length; j++) {
                             correctNeighbours.add(listOfNeighbours[j]);
+                            System.out.print(listOfNeighbours[j] + "  ");
                         }
                         Collections.shuffle(correctNeighbours);
                         neighboursOptions.add(correctNeighbours.get(0));
+                        System.out.println("CORRECT NEIGHBOUR:" + correctNeighbours.get(0));
                     }
 
                     Collections.shuffle(neighboursOptions); // randomize content
@@ -531,16 +578,26 @@ public class QuizQuestions extends AppCompatActivity {
 
                         quizQuestionToLoadToDB.setScore(quizScore);
 
-                        new QuizResultDBWriterTask().execute(new QuizResultTableEntry(Calendar.getInstance().getTime().toString(),
+//                        geographyQuizData.open();
+
+                        /*new QuizResultDBWriterTask().execute(new QuizResultTableEntry(Calendar.getInstance().getTime().toString(),
                                 randomCountriesID[0], randomCountriesID[1], randomCountriesID[2],
                                 randomCountriesID[3], randomCountriesID[4], randomCountriesID[5],
                                 quizScore
-                        ));
+                        ));*/
+
+//                        geographyQuizData.close();
                         //frameLayout.addView();
 
                     } else if (mImageNum > 7) {
 
                         questionsFragmentScrollView.setVisibility(View.GONE);
+
+                        new QuizResultDBWriterTask().execute(new QuizResultTableEntry(Calendar.getInstance().getTime().toString(),
+                                randomCountriesID[0], randomCountriesID[1], randomCountriesID[2],
+                                randomCountriesID[3], randomCountriesID[4], randomCountriesID[5],
+                                quizScore
+                        ));
 
                         ImageView trophy = new ImageView(getContext());
                         trophy.setImageResource(R.drawable.trophy);
@@ -597,21 +654,21 @@ public class QuizQuestions extends AppCompatActivity {
             }
         }
 
-        @Override
-        public void onResume() {
-            Log.d( DEBUG_TAG, "HomePageActivity.onResume()" );
-            if( geographyQuizData != null )
-                geographyQuizData.open();
-            super.onResume();
-        }
-
-        @Override
-        public void onPause() {
-            Log.d( DEBUG_TAG, "HomePageActivity.onPause()" );
-            if( geographyQuizData != null )
-                geographyQuizData.close();
-            super.onPause();
-        }
+//        @Override
+//        public void onResume() {
+//            Log.d( DEBUG_TAG, "QuizQuestions.onResume()" );
+//            if( geographyQuizData != null )
+//                geographyQuizData.open();
+//            super.onResume();
+//        }
+//
+//        @Override
+//        public void onPause() {
+//            Log.d( DEBUG_TAG, "QuizQuestions.onPause()" );
+//            if( geographyQuizData != null )
+//                geographyQuizData.close();
+//            super.onPause();
+//        }
 
     }
 
