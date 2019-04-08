@@ -66,8 +66,9 @@ public class QuizQuestions extends AppCompatActivity {
     public static ArrayList numbers;
     public static String thirdNeighbourOption;
     public static int quizScore = 0;
-    public static int[] saveInstanceStateRandomSelections;
+    public static int[] saveInstanceStateRandomSelections = new int[6];
     public static ArrayList<String> listofNeighboursList = new ArrayList<>();
+    public static int[] randomIntegers;
 
 
     @Override
@@ -75,15 +76,6 @@ public class QuizQuestions extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_questions);
         getSupportActionBar().hide();
-
-
-//        if(savedInstanceState != null){
-//            saveInstanceStateRandomSelections = savedInstanceState.getIntArray("saveInstanceStateRandomSelections");
-//            System.out.println("RANDOM SELECTIONS:" + saveInstanceStateRandomSelections.toString());
-//            for(int i = 0;i < saveInstanceStateRandomSelections.length;i++){
-//                System.out.println("RANDOM SELECTIONS values:" + saveInstanceStateRandomSelections[i]);
-//            }
-//        }
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), randomCountries.length + 2);
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -98,48 +90,55 @@ public class QuizQuestions extends AppCompatActivity {
 
         if( geographyQuizData != null )
             geographyQuizData.close();
-        /* generate random 6 numbers from range of 1 to 195 */
-        int[] randomIntegers = generateRandomInteger(6,1,195);
 
-//        saveInstanceStateRandomSelections = randomIntegers;
 
-        /* populate arrays for values of the random 6 set data generated */
-        for(int i = 0;i < 6;i++){
-            randomCountries[i] = entriesInTable.get(randomIntegers[i]).getCountryName();
-            randomCorrectContinents[i] = entriesInTable.get(randomIntegers[i]).getContinent();
-            randomQuestions[i] = entriesInTable.get(randomIntegers[i]).getQuestion();
-            randomCorrectNeighbours[i] = entriesInTable.get(randomIntegers[i]).getNeighbours();
-            randomCountriesID[i] = entriesInTable.get(randomIntegers[i]).getId();
 
-            /* select two random continents other than correct one */
-            continentFlag = true;
-            while (continentFlag){
-                randomContinentsId = generateRandomInteger(2,0,5);
-                if((listOfContinents[randomContinentsId[0]]).equals(randomCorrectContinents[i])
-                || ((listOfContinents[randomContinentsId[1]]).equals(randomCorrectContinents[i]))) {
-                    continentFlag = true;
-                } else {
-                    otherContinentOptions[i][0] = listOfContinents[randomContinentsId[0]];
-                    otherContinentOptions[i][1] = listOfContinents[randomContinentsId[1]];
-                    continentFlag = false;
+        if(savedInstanceState != null){
+            saveInstanceStateRandomSelections = savedInstanceState.getIntArray("saveInstanceStateRandomSelections");
+            System.out.println("RANDOM SELECTIONS:" + saveInstanceStateRandomSelections.toString());
+            for(int i = 0;i < saveInstanceStateRandomSelections.length;i++){
+                System.out.println("RANDOM SELECTIONS values:" + saveInstanceStateRandomSelections[i]);
+            }
+        } else {
+            randomIntegers = generateRandomInteger(6,1,195);
+            saveInstanceStateRandomSelections = randomIntegers;
+            /* populate arrays for values of the random 6 set data generated */
+            for(int i = 0;i < 6;i++){
+                randomCountries[i] = entriesInTable.get(randomIntegers[i]).getCountryName();
+                randomCorrectContinents[i] = entriesInTable.get(randomIntegers[i]).getContinent();
+                randomQuestions[i] = entriesInTable.get(randomIntegers[i]).getQuestion();
+                randomCorrectNeighbours[i] = entriesInTable.get(randomIntegers[i]).getNeighbours();
+                randomCountriesID[i] = entriesInTable.get(randomIntegers[i]).getId();
 
-                    if(DEBUG) {
-                        System.out.println("RANDOM CONTINENT A: " + otherContinentOptions[i][0]);
-                        System.out.println("RANDOM CONTINENT B: " + otherContinentOptions[i][1]);
-                        System.out.println("RANDOM CONTINENT C: " + randomCorrectContinents[i]);
-                        System.out.println("RANDOM CONTINENT");
+                /* select two random continents other than correct one */
+                continentFlag = true;
+                while (continentFlag){
+                    randomContinentsId = generateRandomInteger(2,0,5);
+                    if((listOfContinents[randomContinentsId[0]]).equals(randomCorrectContinents[i])
+                            || ((listOfContinents[randomContinentsId[1]]).equals(randomCorrectContinents[i]))) {
+                        continentFlag = true;
+                    } else {
+                        otherContinentOptions[i][0] = listOfContinents[randomContinentsId[0]];
+                        otherContinentOptions[i][1] = listOfContinents[randomContinentsId[1]];
+                        continentFlag = false;
+
+                        if(DEBUG) {
+                            System.out.println("RANDOM CONTINENT A: " + otherContinentOptions[i][0]);
+                            System.out.println("RANDOM CONTINENT B: " + otherContinentOptions[i][1]);
+                            System.out.println("RANDOM CONTINENT C: " + randomCorrectContinents[i]);
+                            System.out.println("RANDOM CONTINENT");
+                        }
                     }
                 }
-            }
 
-            /* select two random neighbours other than correct one */
-            neighbourFlag = true;
-            listOfNeighbours = randomCorrectNeighbours[i].split(";");
-            for(int idx = 0 ;idx < listOfNeighbours.length; idx++){
-                listofNeighboursList.add(listOfNeighbours[idx]);
-            }
+                /* select two random neighbours other than correct one */
+                neighbourFlag = true;
+                listOfNeighbours = randomCorrectNeighbours[i].split(";");
+                for(int idx = 0 ;idx < listOfNeighbours.length; idx++){
+                    listofNeighboursList.add(listOfNeighbours[idx]);
+                }
 
-            System.out.println("LIST OF NEIGHBOURS:" + Arrays.toString(listOfNeighbours));
+                System.out.println("LIST OF NEIGHBOURS:" + Arrays.toString(listOfNeighbours));
 
            /* while (neighbourFlag){
                 randomNeighbourId = generateRandomInteger(2,1,195);
@@ -177,6 +176,130 @@ public class QuizQuestions extends AppCompatActivity {
 
             }*/
 
+                while(neighbourFlag){
+                    randomNeighbourId = generateRandomInteger(2,1,195);
+                    if(listofNeighboursList.contains(countryNames.get(randomNeighbourId[0] - 1))
+                            && listofNeighboursList.contains(countryNames.get(randomNeighbourId[1] - 1))
+                    ){
+                        neighbourFlag= true;
+                    } else {
+                        otherNeighbourOptions[i][0] = countryNames.get(randomNeighbourId[0] - 1);
+                        otherNeighbourOptions[i][1] = countryNames.get(randomNeighbourId[1] - 1);
+
+                        if(randomCorrectNeighbours[i].trim().equals("No Neighbour")){
+                            int[] randomNumber;
+                            while(true){
+                                randomNeighbourId = generateRandomInteger(1,1,195);
+                                if(otherNeighbourOptions[i][0].equals(countryNames.get(randomNeighbourId[0] - 1))
+                                        || otherNeighbourOptions[i][1].equals(countryNames.get(randomNeighbourId[0] - 1))){
+
+                                } else {
+                                    thirdNeighbourOption = countryNames.get(randomNeighbourId[0] - 1);
+                                    break;
+                                }
+                            }
+                        }
+
+                        neighbourFlag = false;
+                    }
+                }
+
+            }
+        }
+
+        /*mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), randomCountries.length + 2);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        geographyQuizData = new GeographyQuizData( this );
+
+        if( geographyQuizData != null )
+            geographyQuizData.open();
+        // call logic for loading questions
+        List<CountryContinentNeighbourTableEntry> entriesInTable = geographyQuizData.retrieveAllCountryEntries();
+        List<String> countryNames = geographyQuizData.retrieveAllCountryNames();
+
+        if( geographyQuizData != null )
+            geographyQuizData.close();
+*/
+        /* generate random 6 numbers from range of 1 to 195 */
+//        randomIntegers = generateRandomInteger(6,1,195);
+
+//        saveInstanceStateRandomSelections = randomIntegers;
+
+       /* *//* populate arrays for values of the random 6 set data generated *//*
+        for(int i = 0;i < 6;i++){
+            randomCountries[i] = entriesInTable.get(randomIntegers[i]).getCountryName();
+            randomCorrectContinents[i] = entriesInTable.get(randomIntegers[i]).getContinent();
+            randomQuestions[i] = entriesInTable.get(randomIntegers[i]).getQuestion();
+            randomCorrectNeighbours[i] = entriesInTable.get(randomIntegers[i]).getNeighbours();
+            randomCountriesID[i] = entriesInTable.get(randomIntegers[i]).getId();
+
+            *//* select two random continents other than correct one *//*
+            continentFlag = true;
+            while (continentFlag){
+                randomContinentsId = generateRandomInteger(2,0,5);
+                if((listOfContinents[randomContinentsId[0]]).equals(randomCorrectContinents[i])
+                || ((listOfContinents[randomContinentsId[1]]).equals(randomCorrectContinents[i]))) {
+                    continentFlag = true;
+                } else {
+                    otherContinentOptions[i][0] = listOfContinents[randomContinentsId[0]];
+                    otherContinentOptions[i][1] = listOfContinents[randomContinentsId[1]];
+                    continentFlag = false;
+
+                    if(DEBUG) {
+                        System.out.println("RANDOM CONTINENT A: " + otherContinentOptions[i][0]);
+                        System.out.println("RANDOM CONTINENT B: " + otherContinentOptions[i][1]);
+                        System.out.println("RANDOM CONTINENT C: " + randomCorrectContinents[i]);
+                        System.out.println("RANDOM CONTINENT");
+                    }
+                }
+            }
+
+            *//* select two random neighbours other than correct one *//*
+            neighbourFlag = true;
+            listOfNeighbours = randomCorrectNeighbours[i].split(";");
+            for(int idx = 0 ;idx < listOfNeighbours.length; idx++){
+                listofNeighboursList.add(listOfNeighbours[idx]);
+            }
+
+            System.out.println("LIST OF NEIGHBOURS:" + Arrays.toString(listOfNeighbours));
+
+           *//* while (neighbourFlag){
+                randomNeighbourId = generateRandomInteger(2,1,195);
+                for(int idx = 0;idx < listOfNeighbours.length ; idx++ ){
+                    if(listOfNeighbours[idx].equals(countryNames.get(randomNeighbourId[0] - 1))
+                            || listOfNeighbours[idx].equals(countryNames.get(randomNeighbourId[1] - 1))
+                          //  || listOfNeighbours[0].equals("No Neighbour")
+                    ){
+                        neighbourFlag = true;
+                    } else {
+//                        if(!countryNames.get(randomNeighbourId[0] - 1).equals("No Neighbour"))
+                        if(!listOfNeighbours[idx].equals("No Neighbour"))
+                        otherNeighbourOptions[i][0] = countryNames.get(randomNeighbourId[0] - 1);
+
+//                        if(!countryNames.get(randomNeighbourId[1] - 1).equals("No Neighbour"))
+                        if(!countryNames.get(randomNeighbourId[1] - 1).equals("No Neighbour"))
+                        otherNeighbourOptions[i][1] = countryNames.get(randomNeighbourId[1] - 1);
+
+                        if(randomCorrectNeighbours[i].equals("No Neighbour")){
+                            int[] randomNumber;
+                            while(true){
+                                randomNeighbourId = generateRandomInteger(1,1,195);
+                                if(otherNeighbourOptions[i][0].equals(countryNames.get(randomNeighbourId[0] - 1))
+                                || otherNeighbourOptions[i][1].equals(countryNames.get(randomNeighbourId[0] - 1))){
+
+                                } else {
+                                    thirdNeighbourOption = countryNames.get(randomNeighbourId[0] - 1);
+                                    break;
+                                }
+                            }
+                        }
+                        neighbourFlag = false;
+                    }
+                }
+
+            }*//*
+
            while(neighbourFlag){
                randomNeighbourId = generateRandomInteger(2,1,195);
                if(listofNeighboursList.contains(countryNames.get(randomNeighbourId[0] - 1))
@@ -205,7 +328,7 @@ public class QuizQuestions extends AppCompatActivity {
                }
            }
 
-        }
+        }*/
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -229,7 +352,7 @@ public class QuizQuestions extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putIntArray("saveInstanceStateRandomSelections",saveInstanceStateRandomSelections);
-        Log.e(DEBUG_TAG,"QuizQuestions.onSaveInstanceState() :" + saveInstanceStateRandomSelections.toString());
+        Log.e(DEBUG_TAG,"QuizQuestions.onSaveInstanceState() :" + saveInstanceStateRandomSelections);
     }
 
 
@@ -485,9 +608,9 @@ public class QuizQuestions extends AppCompatActivity {
             super.onActivityCreated(savedInstanceState);
 //            quizScore = 0;
 
-//            if(savedInstanceState != null){
-//                saveInstanceStateRandomSelections = savedInstanceState.getIntArray("saveInstanceStateRandomSelections");
-//            }
+            if(savedInstanceState != null){
+                saveInstanceStateRandomSelections = savedInstanceState.getIntArray("saveInstanceStateRandomSelections");
+            }
 
             if (QuizQuestions.class.isInstance(getActivity())) {
 
@@ -670,6 +793,12 @@ public class QuizQuestions extends AppCompatActivity {
 //            super.onPause();
 //        }
 
+
+        @Override
+        public void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putIntArray("saveInstanceStateRandomSelections",saveInstanceStateRandomSelections);
+        }
     }
 
     private static class QuizResultDBWriterTask extends AsyncTask<QuizResultTableEntry, Void, QuizResultTableEntry> {
