@@ -1,10 +1,12 @@
 package cs.uga.edu.geographyquiz;
 
+import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.provider.MediaStore;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -12,7 +14,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +23,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class QuizQuestions extends AppCompatActivity {
 
@@ -39,12 +43,6 @@ public class QuizQuestions extends AppCompatActivity {
     private GeographyQuizData geographyQuizData = null;
     static boolean DEBUG = false;
 
-
-    public final static Integer[] imageIds = new Integer[]{
-            R.drawable.figs, R.drawable.grapes, R.drawable.heirloom_tomatoes,
-            R.drawable.lemons, R.drawable.lime, R.drawable.oranges,
-            R.drawable.peach, R.drawable.peppers, R.drawable.zucchini
-    };
 
     public final static String[] listOfContinents = new String[]{
             "Asia", "North America", "Europe",
@@ -56,6 +54,7 @@ public class QuizQuestions extends AppCompatActivity {
     public static String[] randomQuestions = new String[6];
     public static String[] randomCorrectNeighbours = new String[6];
     public static String[] randomCorrectContinents = new String[6];
+    public static long[] randomCountriesID = new long[6];
     public static String[][] otherContinentOptions = new String[6][2];
     public static String[][] otherNeighbourOptions = new String[6][2];
     public static String[] listOfNeighbours;
@@ -66,6 +65,9 @@ public class QuizQuestions extends AppCompatActivity {
     public static int[] extractedNeighbourId = new int[2];
     public static ArrayList numbers;
     public static String thirdNeighbourOption;
+    public static int quizScore = 0;
+    public static int[] saveInstanceStateRandomSelections;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +75,16 @@ public class QuizQuestions extends AppCompatActivity {
         setContentView(R.layout.activity_quiz_questions);
         getSupportActionBar().hide();
 
-        //mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), imageIds.length);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), randomCountries.length + 1);
+
+//        if(savedInstanceState != null){
+//            saveInstanceStateRandomSelections = savedInstanceState.getIntArray("saveInstanceStateRandomSelections");
+//            System.out.println("RANDOM SELECTIONS:" + saveInstanceStateRandomSelections.toString());
+//            for(int i = 0;i < saveInstanceStateRandomSelections.length;i++){
+//                System.out.println("RANDOM SELECTIONS values:" + saveInstanceStateRandomSelections[i]);
+//            }
+//        }
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), randomCountries.length + 2);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         geographyQuizData = new GeographyQuizData( this );
@@ -90,6 +100,7 @@ public class QuizQuestions extends AppCompatActivity {
         /* generate random 6 numbers from range of 1 to 195 */
         int[] randomIntegers = generateRandomInteger(6,1,195);
 
+//        saveInstanceStateRandomSelections = randomIntegers;
 
         /* populate arrays for values of the random 6 set data generated */
         for(int i = 0;i < 6;i++){
@@ -97,6 +108,7 @@ public class QuizQuestions extends AppCompatActivity {
             randomCorrectContinents[i] = entriesInTable.get(randomIntegers[i]).getContinent();
             randomQuestions[i] = entriesInTable.get(randomIntegers[i]).getQuestion();
             randomCorrectNeighbours[i] = entriesInTable.get(randomIntegers[i]).getNeighbours();
+            randomCountriesID[i] = entriesInTable.get(randomIntegers[i]).getId();
 
             /* select two random continents other than correct one */
             continentFlag = true;
@@ -197,6 +209,15 @@ public class QuizQuestions extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putIntArray("saveInstanceStateRandomSelections",saveInstanceStateRandomSelections);
+        Log.e(DEBUG_TAG,"QuizQuestions.onSaveInstanceState() :" + saveInstanceStateRandomSelections.toString());
+    }
+
+
+
     public int[] generateRandomInteger(int sizeOfArray, int startIndex, int lastIndex){
         int[] randomIntegers = new int[sizeOfArray];
         numbers = new ArrayList();
@@ -285,29 +306,24 @@ public class QuizQuestions extends AppCompatActivity {
         private RadioButton neighbourOptionA;
         private RadioButton neighbourOptionB;
         private RadioButton neighbourOptionC;
-        private ImageView resultsImage;
-        private TextView titleTextView9;
-        private RadioButton neighbourOptionD;
-        private TextView neighbourQuestionTextView;
-        private TextView continentOptionATEXTTextView;
-        private TextView continentOptionBTEXTTextView;
-        private TextView continentOptionCTEXTTextView;
-        private TextView neighbourOptionATEXTTextView;
-        private TextView neighbourOptionBTEXTTextView;
-        private TextView neighbourOptionCTEXTTextView;
-        private TextView neighbourOptionDTEXTTextView;
         private TextView swipeQuestionsStatusTextView;
-        private TextView swipeInstructionsTextView;
-        private TextView quizInfo2TextView;
         private Button goToMainPage;
-        private LinearLayout question1LinearLayout;
         private ScrollView questionsFragmentScrollView;
+        private RadioGroup continentRadioGroup;
+        private RadioGroup neighbourRadioGroup;
+        public static int quizScore = 0;
+        public static String correctContinentAnswer;
+        public static String correctNeighbourAnswer;
+        public static QuizResultTableEntry quizQuestionToLoadToDB = new QuizResultTableEntry();
+        public static GeographyQuizData geographyQuizData = null;
+
 
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
+
             return fragment;
         }
 
@@ -317,6 +333,7 @@ public class QuizQuestions extends AppCompatActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            geographyQuizData = new GeographyQuizData(getContext());
             if (getArguments() != null) {
                 mImageNum = getArguments().getInt(ARG_SECTION_NUMBER);
             } else {
@@ -325,7 +342,7 @@ public class QuizQuestions extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_quiz_questions, container, false);
 
@@ -339,27 +356,82 @@ public class QuizQuestions extends AppCompatActivity {
             neighbourOptionB = rootView.findViewById(R.id.neighbourOptionB);
             neighbourOptionC = rootView.findViewById(R.id.neighbourOptionC);
 
-            /* for results page */
-            resultsImage = rootView.findViewById(R.id.imageView2);
-            titleTextView9 = rootView.findViewById(R.id.textView9);
-            neighbourOptionD = rootView.findViewById(R.id.neighbourOptionD);
-            neighbourQuestionTextView = rootView.findViewById(R.id.neighbourQuestionTextView);
-            continentOptionATEXTTextView = rootView.findViewById(R.id.continentOptionATEXTTextView);
-            continentOptionBTEXTTextView = rootView.findViewById(R.id.continentOptionBTEXTTextView);
-            continentOptionCTEXTTextView = rootView.findViewById(R.id.continentOptionCTEXTTextView);
-
-            neighbourOptionATEXTTextView = rootView.findViewById(R.id.neighbourOptionATEXTTextView);
-            neighbourOptionBTEXTTextView = rootView.findViewById(R.id.neighbourOptionBTEXTTextView);
-            neighbourOptionCTEXTTextView = rootView.findViewById(R.id.neighbourOptionCTEXTTextView);
-            neighbourOptionDTEXTTextView = rootView.findViewById(R.id.neighbourOptionDTEXTTextView);
-
             swipeQuestionsStatusTextView = rootView.findViewById(R.id.swipeQuestionsStatusTextView);
-            swipeInstructionsTextView = rootView.findViewById(R.id.swipeInstructionsTextView);
-            quizInfo2TextView = rootView.findViewById(R.id.quizInfo2TextView);
             goToMainPage = rootView.findViewById(R.id.goToMainPage);
-            question1LinearLayout = rootView.findViewById(R.id.question1LinearLayout);
             questionsFragmentScrollView = rootView.findViewById(R.id.questionsFragmentScrollView);
 
+            continentRadioGroup = rootView.findViewById(R.id.continentRadioGroup);
+            neighbourRadioGroup = rootView.findViewById(R.id.neighbourRadioGroup);
+
+            /* add listeners on radio button to check for the option */
+            continentRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    switch ((checkedId)) {
+                        case -1:
+                            Log.e(DEBUG_TAG, "continents choices are cleared");
+                            break;
+                        case R.id.continentOptionA:
+                            if (continentOptionA.getText().toString().trim().equals(randomCorrectContinents[mImageNum - 1])) {
+                                System.out.println("CORRECT CONTINENT ANSWER SELECTED : " + continentOptionA.getText());
+                                quizScore++;
+                            }
+                            break;
+                        case R.id.continentOptionB:
+                            if (continentOptionB.getText().toString().trim().equals(randomCorrectContinents[mImageNum - 1])) {
+                                System.out.println("CORRECT CONTINENT ANSWER SELECTED : " + continentOptionB.getText());
+                                quizScore++;
+                            }
+                            break;
+                        case R.id.continentOptionC:
+                            if (continentOptionC.getText().toString().trim().equals(randomCorrectContinents[mImageNum - 1])) {
+                                System.out.println("CORRECT CONTINENT ANSWER SELECTED : " + continentOptionC.getText());
+                                quizScore++;
+                            }
+                            break;
+                        default:
+                            Log.e(DEBUG_TAG, "Default option for continent");
+                            break;
+                    }
+
+                }
+            });
+
+            /* add listeners on neighbours radio button to check for the option */
+            neighbourRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                    ArrayList correctNeighboursInListerner = new ArrayList();
+                    for (int j = 0; j < listOfNeighbours.length; j++) {
+                        correctNeighboursInListerner.add(listOfNeighbours[j]);
+                    }
+
+                    switch ((checkedId)) {
+                        case -1:
+                            Log.e(DEBUG_TAG, "neighbours choices are cleared");
+                            break;
+                        case R.id.neighbourOptionA:
+                            if (correctNeighboursInListerner.contains(neighbourOptionA.getText().toString().trim())) {
+                                quizScore++;
+                            }
+                            break;
+                        case R.id.neighbourOptionB:
+                            if (correctNeighboursInListerner.contains(neighbourOptionB.getText().toString().trim())) {
+                                quizScore++;
+                            }
+                            break;
+                        case R.id.neighbourOptionC:
+                            if (correctNeighboursInListerner.contains(neighbourOptionC.getText().toString().trim())) {
+                                quizScore++;
+                            }
+                            break;
+                        default:
+                            Log.e(DEBUG_TAG, "Default option for neighbour");
+                            break;
+                    }
+                }
+            });
 
             return rootView;
         }
@@ -367,9 +439,15 @@ public class QuizQuestions extends AppCompatActivity {
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+//            quizScore = 0;
+
+//            if(savedInstanceState != null){
+//                saveInstanceStateRandomSelections = savedInstanceState.getIntArray("saveInstanceStateRandomSelections");
+//            }
+
             if (QuizQuestions.class.isInstance(getActivity())) {
 
-                if(mImageNum < 7) {
+                if (mImageNum < 7) {
 
                     final String genericQuestion = randomQuestions[mImageNum - 1];
                     goToMainPage.setVisibility(View.GONE);
@@ -379,6 +457,13 @@ public class QuizQuestions extends AppCompatActivity {
                     continentsOptions.add(otherContinentOptions[mImageNum - 1][0]);
                     continentsOptions.add(otherContinentOptions[mImageNum - 1][1]);
                     continentsOptions.add(randomCorrectContinents[mImageNum - 1]);
+                    correctContinentAnswer = randomCorrectContinents[mImageNum - 1];
+
+                    if (DEBUG) {
+                        System.out.println("CORRECT CONTINENT ANSWER for ::::::" + mImageNum + " is " + correctContinentAnswer);
+                        System.out.println("OTHER OPTION CONTINENT for " + mImageNum + " is " + otherContinentOptions[mImageNum - 1][0]);
+                        System.out.println("OTHER OPTION CONTINENT for " + mImageNum + " is " + otherContinentOptions[mImageNum - 1][1]);
+                    }
 
                     Collections.shuffle(continentsOptions); // randomize content
 
@@ -386,6 +471,7 @@ public class QuizQuestions extends AppCompatActivity {
                     ArrayList neighboursOptions = new ArrayList();
                     neighboursOptions.add(otherNeighbourOptions[mImageNum - 1][0]);
                     neighboursOptions.add(otherNeighbourOptions[mImageNum - 1][1]);
+                    correctNeighbourAnswer = randomCorrectNeighbours[mImageNum - 1];
 
                     if (randomCorrectNeighbours[mImageNum - 1].trim().equals("No Neighbour")) {
                         neighboursOptions.add(thirdNeighbourOption);
@@ -400,6 +486,7 @@ public class QuizQuestions extends AppCompatActivity {
 
                     Collections.shuffle(neighboursOptions); // randomize content
 
+
                     //swipeQuestionsStatusTextView.setText(mImageNum - 1);
                     int statusValue = mImageNum;
 
@@ -411,116 +498,139 @@ public class QuizQuestions extends AppCompatActivity {
                             neighbourOptionA, neighboursOptions.get(0).toString(), neighbourOptionB, neighboursOptions.get(1).toString(),
                             neighbourOptionC, neighboursOptions.get(2).toString(), swipeQuestionsStatusTextView, Integer.toString(statusValue)
                     );
+
+
+                    switch (mImageNum - 1) {
+                        case 0:
+                            quizQuestionToLoadToDB.setQ1(randomCountriesID[mImageNum - 1]);
+                            break;
+                        case 1:
+                            quizQuestionToLoadToDB.setQ2(randomCountriesID[mImageNum - 1]);
+                            break;
+                        case 2:
+                            quizQuestionToLoadToDB.setQ3(randomCountriesID[mImageNum - 1]);
+                            break;
+                        case 3:
+                            quizQuestionToLoadToDB.setQ4(randomCountriesID[mImageNum - 1]);
+                            break;
+                        case 4:
+                            quizQuestionToLoadToDB.setQ5(randomCountriesID[mImageNum - 1]);
+                            break;
+                        case 5:
+                            quizQuestionToLoadToDB.setQ6(randomCountriesID[mImageNum - 1]);
+                            break;
+                    }
+
                 } else {
 
+                    if (mImageNum == 7) {
+                        questionsFragmentScrollView.setVisibility(View.GONE);
 
-//                    continentQuestionTextView.setVisibility(View.GONE);
-//                    continentQuestionTextView.setText("Results");
-//                    continentQuestionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 80f);
-//                    continentQuestionTextView.setTextColor(getResources().getColor(R.color.colorAccent));
-//                    continentQuestionTextView.setLayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+                        FrameLayout frameLayout = getView().findViewById(R.id.fragmentXML);
+                        frameLayout.setBackgroundResource(R.drawable.map);
 
-//                    resultsImage.setImageResource(R.drawable.trophy);
-//                    titleTextView9.setText(" ");
-//                    titleTextView9.setVisibility(View.GONE);
-//
-//                    continentOptionA.setVisibility(View.GONE);
-//                    continentOptionB.setVisibility(View.GONE);
-//                    continentOptionC.setVisibility(View.GONE);
-//
-//                    neighbourOptionA.setVisibility(View.GONE);
-//                    neighbourOptionB.setVisibility(View.GONE);
-//                    neighbourOptionC.setVisibility(View.GONE);
-//                    neighbourOptionD.setVisibility(View.GONE);
-//
-//                    continentOptionATEXTTextView.setVisibility(View.GONE);
-//                    continentOptionBTEXTTextView.setVisibility(View.GONE);
-//                    continentOptionCTEXTTextView.setVisibility(View.GONE);
-//
-//                    neighbourOptionATEXTTextView.setVisibility(View.GONE);
-//                    neighbourOptionBTEXTTextView.setVisibility(View.GONE);
-//                    neighbourOptionCTEXTTextView.setVisibility(View.GONE);
-//                    neighbourOptionDTEXTTextView.setVisibility(View.GONE);
-//
-//                    swipeQuestionsStatusTextView.setVisibility(View.GONE);
-//                    swipeInstructionsTextView.setVisibility(View.GONE);
-//                    quizInfo2TextView.setVisibility(View.GONE);
-//
-//                    neighbourQuestionTextView.setText("DISPLAY SCORES HERE"); // this will be used to display the scores
-//                    neighbourQuestionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,80f);
+                        quizQuestionToLoadToDB.setScore(quizScore);
 
-                    questionsFragmentScrollView.setVisibility(View.GONE);
+                        new QuizResultDBWriterTask().execute(new QuizResultTableEntry(Calendar.getInstance().getTime().toString(),
+                                randomCountriesID[0], randomCountriesID[1], randomCountriesID[2],
+                                randomCountriesID[3], randomCountriesID[4], randomCountriesID[5],
+                                quizScore
+                        ));
+                        //frameLayout.addView();
 
-                    ImageView trophy = new ImageView(getContext());
-                    trophy.setImageResource(R.drawable.trophy);
+                    } else if (mImageNum > 7) {
 
-                    TextView resutlsText = new TextView(getContext());
-                    resutlsText.setText("!!!Congratulations!!!");
-                    resutlsText.setAlpha(1);
-                    resutlsText.setTypeface(resutlsText.getTypeface(),Typeface.BOLD_ITALIC);
-                    resutlsText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-                    resutlsText.setGravity(Gravity.CENTER);
-                    resutlsText.setTextColor(getResources().getColor(R.color.colorAccent));
-                    resutlsText.setTextSize(45);
+                        questionsFragmentScrollView.setVisibility(View.GONE);
 
-                    TextView scoreValue = new TextView(getContext());
-                    LinearLayout.LayoutParams scoreValueLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    scoreValue.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    scoreValue.setTextColor(getResources().getColor(R.color.colorSomethingYellow));
-                    scoreValue.setText("5/6");
-                    scoreValue.setTypeface(scoreValue.getTypeface(),Typeface.ITALIC);
-                    scoreValue.setLayoutParams(scoreValueLayoutParams);
-                    //scoreValue.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 500));
-                   // scoreValue.setPadding(0,100,0,0);
-                    scoreValue.setTextSize(100);
+                        ImageView trophy = new ImageView(getContext());
+                        trophy.setImageResource(R.drawable.trophy);
 
-                    Button goToMainPage = new Button(getContext());
-                    LinearLayout.LayoutParams buttonParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    buttonParameters.setMargins(0,200,0,0);
-                    goToMainPage.setLayoutParams(buttonParameters);
-                    goToMainPage.setTextColor(getResources().getColor(R.color.colorWhite));
-                    goToMainPage.setBackgroundColor(getResources().getColor(R.color.colorBackground));
-                    goToMainPage.setText("Go To Main Page");
+                        TextView resutlsText = new TextView(getContext());
+                        resutlsText.setText("!!!Congratulations!!!");
+                        resutlsText.setAlpha(1);
+                        resutlsText.setTypeface(resutlsText.getTypeface(), Typeface.BOLD_ITALIC);
+                        resutlsText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        resutlsText.setGravity(Gravity.CENTER);
+                        resutlsText.setTextColor(getResources().getColor(R.color.colorAccent));
+                        resutlsText.setTextSize(45);
 
-                    LinearLayout linearLayoutResultsPage = new LinearLayout(getContext());
-                    linearLayoutResultsPage.setOrientation(LinearLayout.VERTICAL);
-                    //linearLayoutResultsPage.setBackgroundColor(getResources().getColor(R.color.blueEnough));
-                    //linearLayoutResultsPage.setAlpha((float) 0.9);
-                    linearLayoutResultsPage.setPadding(15,100,15,50);
-                    linearLayoutResultsPage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-                    linearLayoutResultsPage.setGravity(Gravity.CENTER);
+                        TextView scoreValue = new TextView(getContext());
+                        LinearLayout.LayoutParams scoreValueLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        scoreValue.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                        scoreValue.setTextColor(getResources().getColor(R.color.colorSomethingYellow));
+                        scoreValue.setText(Integer.toString(quizScore) + " / 12");
+                        scoreValue.setTypeface(scoreValue.getTypeface(), Typeface.ITALIC);
+                        scoreValue.setLayoutParams(scoreValueLayoutParams);
+                        scoreValue.setTextSize(100);
 
-                    linearLayoutResultsPage.addView(trophy);
-                    linearLayoutResultsPage.addView(resutlsText);
-                    linearLayoutResultsPage.addView(scoreValue);
-                    linearLayoutResultsPage.addView(goToMainPage);
+                        Button goToMainPage = new Button(getContext());
+                        LinearLayout.LayoutParams buttonParameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        buttonParameters.setMargins(0, 200, 0, 0);
+                        goToMainPage.setLayoutParams(buttonParameters);
+                        goToMainPage.setTextColor(getResources().getColor(R.color.colorWhite));
+                        goToMainPage.setBackgroundColor(getResources().getColor(R.color.colorBackground));
+                        goToMainPage.setText("Go To Main Page");
 
-                    FrameLayout frameLayout = getView().findViewById(R.id.fragmentXML);
-                    frameLayout.setBackgroundResource(R.drawable.map);
-                    //frameLayout.setAlpha((float)0.7);
-                    frameLayout.addView(linearLayoutResultsPage);
+                        LinearLayout linearLayoutResultsPage = new LinearLayout(getContext());
+                        linearLayoutResultsPage.setOrientation(LinearLayout.VERTICAL);
+                        linearLayoutResultsPage.setPadding(15, 100, 15, 50);
+                        linearLayoutResultsPage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        linearLayoutResultsPage.setGravity(Gravity.CENTER);
 
-                    ((QuizQuestions) getActivity()).onClickButtonGoToMainPage(goToMainPage);
+                        linearLayoutResultsPage.addView(trophy);
+                        linearLayoutResultsPage.addView(resutlsText);
+                        linearLayoutResultsPage.addView(scoreValue);
+                        linearLayoutResultsPage.addView(goToMainPage);
 
-//                    TextView resutlsText = new TextView(getContext());
-//                    resutlsText.setText("Results");
-//                    resutlsText.setTextColor(getResources().getColor(R.color.colorWhite));
-//                    resutlsText.setTextSize(80);
-//                    resutlsText.setVisibility(View.VISIBLE);
-//
-//                    /* add a linear layout in scroll view to add buttons */
-//
-//                    ScrollView scroll = new ScrollView(getContext());
-//                    scroll.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-//                    scroll.setAlpha((float)0.7);
-//                    scroll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//                            LinearLayout.LayoutParams.MATCH_PARENT));
-//                    scroll.addView(resutlsText);
-//
-//                    getActivity().addContentView(scroll, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT));
+                        FrameLayout frameLayout = new FrameLayout(getContext());//getView().findViewById(R.id.fragmentXML);
+                        frameLayout.setBackgroundResource(R.drawable.map);
+                        frameLayout.addView(linearLayoutResultsPage);
+
+                        ((QuizQuestions) getActivity()).onClickButtonGoToMainPage(goToMainPage);
+
+                        ((QuizQuestions) getActivity()).addContentView(frameLayout, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT));
+                        quizScore = 0;
+                    }
 
                 }
             }
+        }
+
+        @Override
+        public void onResume() {
+            Log.d( DEBUG_TAG, "HomePageActivity.onResume()" );
+            if( geographyQuizData != null )
+                geographyQuizData.open();
+            super.onResume();
+        }
+
+        @Override
+        public void onPause() {
+            Log.d( DEBUG_TAG, "HomePageActivity.onPause()" );
+            if( geographyQuizData != null )
+                geographyQuizData.close();
+            super.onPause();
+        }
+
+    }
+
+    private static class QuizResultDBWriterTask extends AsyncTask<QuizResultTableEntry, Void, QuizResultTableEntry> {
+
+        // This method will run as a background process to write into db.
+        @Override
+        protected QuizResultTableEntry doInBackground(QuizResultTableEntry... quizResultTableEntry) {
+            GeographyQuizData.storequizEntry(quizResultTableEntry[0]);
+            return quizResultTableEntry[0];
+        }
+
+        // This method will be automatically called by Android once the writing to the database
+        // in a background process has finished.
+        @Override
+        protected void onPostExecute(QuizResultTableEntry quizResultTableEntry) {
+            super.onPostExecute(quizResultTableEntry);
+
+            Log.d(DEBUG_TAG, "Quiz Entry saved: " + quizResultTableEntry);
         }
     }
 }

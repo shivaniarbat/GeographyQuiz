@@ -118,6 +118,7 @@
                         android:orientation="vertical">
 
                         <RadioGroup
+                            android:id="@+id/continentRadioGroup"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
                             <RadioButton
@@ -247,6 +248,7 @@
                         android:orientation="vertical">
 
                         <RadioGroup
+                            android:id="@+id/neighbourRadioGroup"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
                             <RadioButton

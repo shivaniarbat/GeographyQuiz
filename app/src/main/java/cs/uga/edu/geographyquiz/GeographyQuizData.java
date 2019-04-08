@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class GeographyQuizData {
@@ -15,7 +17,7 @@ public class GeographyQuizData {
     public static final String DEBUG_TAG = "GeographyQuizData";
 
     // this is a reference to our database; it is used later to run SQL commands
-    private SQLiteDatabase db;
+    private static SQLiteDatabase db;
     private SQLiteOpenHelper geographyQuizDBHelper;
     private static final String[] allColumns = {
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_AUTOINC,
@@ -23,16 +25,6 @@ public class GeographyQuizData {
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_QUESTION,
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_CONTINENT,
             GeographyQuizDBHelper.COUNTRY_CONTINENT_NEIGHBOUR_NEIGHBOURS,
-            //for quiz result
-            GeographyQuizDBHelper.QUIZ_RESULT_ID,
-            GeographyQuizDBHelper.QUIZ_DATE,
-            GeographyQuizDBHelper.QUIZ_QUESTION_ID1,
-            GeographyQuizDBHelper.QUIZ_QUESTION_ID2,
-            GeographyQuizDBHelper.QUIZ_QUESTION_ID3,
-            GeographyQuizDBHelper.QUIZ_QUESTION_ID4,
-            GeographyQuizDBHelper.QUIZ_QUESTION_ID5,
-            GeographyQuizDBHelper.QUIZ_QUESTION_ID6,
-            GeographyQuizDBHelper.QUIZ_SCORE
     };
 
     public GeographyQuizData( Context context ){
@@ -157,4 +149,35 @@ public class GeographyQuizData {
         }
         return countryEntries;
     }
+
+    // Store a new job lead in the database.
+    public static QuizResultTableEntry storequizEntry( QuizResultTableEntry quizResultTableEntry ) {
+
+        // Prepare the values for all of the necessary columns in the table
+        // and set their values to the variables of the JobLead argument.
+        // This is how we are providing persistence to a JobLead (Java object) instance
+        // by storing it as a new row in the database table representing job leads.
+        /* add this data into database in quiz_results table */
+
+        ContentValues values = new ContentValues();
+        values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID1, quizResultTableEntry.getQ1());
+        values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID2, quizResultTableEntry.getQ2());
+        values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID3, quizResultTableEntry.getQ3());
+        values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID4, quizResultTableEntry.getQ4());
+        values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID5, quizResultTableEntry.getQ5());
+        values.put(GeographyQuizDBHelper.QUIZ_QUESTION_ID6, quizResultTableEntry.getQ6());
+        values.put(GeographyQuizDBHelper.QUIZ_DATE, Calendar.getInstance().getTime().toString());
+        values.put(GeographyQuizDBHelper.QUIZ_SCORE, quizResultTableEntry.getScore());
+
+
+        long id = db.insert( GeographyQuizDBHelper.TABLE_QUIZ_RESULT,null, values );
+
+        quizResultTableEntry.setId(id);
+
+        Log.d( DEBUG_TAG, "Stored new job quiz entry with id: " + String.valueOf( quizResultTableEntry.getId() ) );
+
+        return quizResultTableEntry;
+    }
+
+
 }

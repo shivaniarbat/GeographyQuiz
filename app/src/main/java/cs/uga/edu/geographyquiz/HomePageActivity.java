@@ -39,22 +39,22 @@ public class HomePageActivity extends AppCompatActivity {
 
         geographyQuizData = new GeographyQuizData( this );
 
+
         /* on-click listerners for newQuiz and viewPastQuizzes */
         newQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* write logic to load data into table */
-                // check if table is empty then insert data for the first time
+//                /* write logic to load data into table */
+//                // check if table is empty then insert data for the first time
                 List<CountryContinentNeighbourTableEntry> entriesInTable = geographyQuizData.retrieveAllCountryEntries();
                 if(entriesInTable.size() == 0) {
+                    /* tested with pre-loaded database */
                     insertDataInDatabase();
                 }
 
                 /* start new activity */
                 Intent quizQuestions = new Intent(HomePageActivity.this,QuizQuestions.class);
                 startActivity(quizQuestions);
-
-
             }
         });
 
@@ -163,6 +163,5 @@ public class HomePageActivity extends AppCompatActivity {
         for(String countryName :countryContinentHashMap.keySet()){
             new JobLeadDBWriterTask().execute( new CountryContinentNeighbourTableEntry(countryName,"Select CONTINENT & NEIGHBOUR for " + countryName + " from below.",countryContinentHashMap.get(countryName),countryNeighbourHashMap.get(countryName)) );
         }
-
     }
 }

@@ -92,8 +92,8 @@ public class GeographyQuizDBHelper extends SQLiteOpenHelper {
         db.execSQL( CREATE_COUNTRY_CONTINENT_NEIGHBOUR );
         Log.d( DEBUG_TAG, "Table " + TABLE_PARENT_COUNTRY_CONTINENT_NEIGHBOUR + " created" );
 
-        db.execSQL(CREATE_QUIZ_RESULT);
-        Log.d(DEBUG_TAG, "Table " + TABLE_QUIZ_RESULT + "created");
+        db.execSQL( CREATE_QUIZ_RESULT );
+        Log.d( DEBUG_TAG, "Table " +  TABLE_QUIZ_RESULT + " created" );
     }
 
     // We should override onUpgrade method, which will be used to upgrade the database if
@@ -104,9 +104,5 @@ public class GeographyQuizDBHelper extends SQLiteOpenHelper {
         db.execSQL( "drop table if exists " + TABLE_PARENT_COUNTRY_CONTINENT_NEIGHBOUR );
         onCreate( db );
         Log.d( DEBUG_TAG, "Table " + TABLE_PARENT_COUNTRY_CONTINENT_NEIGHBOUR + " upgraded" );
-
-        db.execSQL("drop table if exists " + TABLE_QUIZ_RESULT );
-        onCreate(db);
-        Log.d(DEBUG_TAG, "Table " + TABLE_QUIZ_RESULT + "upgraded");
     }
 }

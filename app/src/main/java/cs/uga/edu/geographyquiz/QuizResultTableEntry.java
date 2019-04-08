@@ -11,8 +11,8 @@ public class QuizResultTableEntry {
     private long q6;
     private long score;
 
-    public QuizResultTableEntry(long id, String date, long q1, long q2, long q3, long q4, long q5, long q6, long score) {
-        this.id = id;
+    public QuizResultTableEntry( String date, long q1, long q2, long q3, long q4, long q5, long q6, long score) {
+        this.id = 1;
         this.date = date;
         this.q1 = q1;
         this.q2 = q2;
