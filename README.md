@@ -3,7 +3,7 @@ An android application - quiz to test geography knowledge
 
 Few Screenshots
     
-![alt text](https://github.com/shivaniarbat/GeographyQuiz/tree/master/screenshots/1.png)
+![alt text](https://github.com/shivaniarbat/GeographyQuiz/tree/master/screenshots/1.png = 250X250)
 
 
 ![alt text](https://github.com/shivaniarbat/GeographyQuiz/tree/master/screenshots/2.png)
