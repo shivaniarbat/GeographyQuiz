@@ -1,5 +1,11 @@
 package cs.uga.edu.geographyquiz;
 
+/**
+ * POJO class for quiz results table entry
+ * @author Apurva Bansode
+ * @version 1.0
+ */
+
 public class QuizResultTableEntry {
     private long id;
     private String date;
@@ -10,6 +16,11 @@ public class QuizResultTableEntry {
     private long q5;
     private long q6;
     private long score;
+
+    public QuizResultTableEntry(String date, long score) {
+        this.date = date;
+        this.score = score;
+    }
 
     public QuizResultTableEntry( String date, long q1, long q2, long q3, long q4, long q5, long q6, long score) {
         this.id = 1;

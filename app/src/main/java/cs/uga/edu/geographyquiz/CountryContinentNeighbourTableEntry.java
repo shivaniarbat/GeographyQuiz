@@ -1,5 +1,8 @@
 package cs.uga.edu.geographyquiz;
 
+/**
+ * POJO class for main table entry object
+ */
 
 public class CountryContinentNeighbourTableEntry {
 
@@ -8,6 +11,8 @@ public class CountryContinentNeighbourTableEntry {
     private String question;
     private String continent;
     private String neighbours;
+
+    /* default constructor */
 
     public CountryContinentNeighbourTableEntry(){
         this.id = -1;

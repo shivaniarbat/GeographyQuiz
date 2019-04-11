@@ -1,9 +1,13 @@
 package cs.uga.edu.geographyquiz;
 
-import android.content.ContentValues;
+/**
+ * QuizQuestions.java - this class extracts the random questions from database. Shuffles the option each
+ * time the user starts a new quiz. Calculates the final score and make an entry in the results table.
+ * @author Shivani Arbat
+ * @version 1.0
+ */
+
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -26,9 +30,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -762,9 +763,12 @@ public class QuizQuestions extends AppCompatActivity {
                         linearLayoutResultsPage.addView(scoreValue);
                         linearLayoutResultsPage.addView(goToMainPage);
 
+                        ScrollView scrollView = new ScrollView(getContext());
+                        scrollView.addView(linearLayoutResultsPage);
+
                         FrameLayout frameLayout = new FrameLayout(getContext());//getView().findViewById(R.id.fragmentXML);
                         frameLayout.setBackgroundResource(R.drawable.map);
-                        frameLayout.addView(linearLayoutResultsPage);
+                        frameLayout.addView(scrollView);
 
                         ((QuizQuestions) getActivity()).onClickButtonGoToMainPage(goToMainPage);
 
@@ -800,6 +804,7 @@ public class QuizQuestions extends AppCompatActivity {
             outState.putIntArray("saveInstanceStateRandomSelections",saveInstanceStateRandomSelections);
         }
     }
+
 
     private static class QuizResultDBWriterTask extends AsyncTask<QuizResultTableEntry, Void, QuizResultTableEntry> {
 

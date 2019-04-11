@@ -46,11 +46,17 @@ public class HomePageActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                /* write logic to load data into table */
 //                // check if table is empty then insert data for the first time
-                List<CountryContinentNeighbourTableEntry> entriesInTable = geographyQuizData.retrieveAllCountryEntries();
-                if(entriesInTable.size() == 0) {
-                    /* tested with pre-loaded database */
-                    insertDataInDatabase();
-                }
+//                List<CountryContinentNeighbourTableEntry> entriesInTable = geographyQuizData.retrieveAllCountryEntries();
+//                if(entriesInTable.size() == 0) {
+//                    /* tested with pre-loaded database */
+//                    insertDataInDatabase();
+//                }
+
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e){
+//                    System.out.println("Thread interrupted so that the data entry is done ");
+//                }
 
                 /* start new activity */
                 Intent quizQuestions = new Intent(HomePageActivity.this,QuizQuestions.class);

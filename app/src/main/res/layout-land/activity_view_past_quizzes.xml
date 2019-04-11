@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".ViewPastQuizzes">
+
+    <ImageView
+        android:id="@+id/summaryImageIcon"
+        android:layout_width="88dp"
+        android:layout_height="86dp"
+        app:layout_constraintBottom_toTopOf="@+id/pastQuizSummaryTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/summary_page_icon" />
+
+    <TextView
+        android:id="@+id/pastQuizSummaryTitle"
+        android:layout_width="308dp"
+        android:layout_height="65dp"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="@string/past_quiz_summary"
+        android:textColor="@color/colorSomethingYellow"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/toDisplayQuizSummary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/summaryImageIcon" />
+
+    <ImageButton
+        android:id="@+id/backImageButtonToHomePage"
+        android:layout_width="66dp"
+        android:layout_height="70dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.100000024"
+        app:srcCompat="@drawable/back_button" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/toDisplayQuizSummary"
+        android:layout_width="325dp"
+        android:layout_height="181dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pastQuizSummaryTitle" />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,5 +1,11 @@
 package cs.uga.edu.geographyquiz;
 
+/**
+ * This is a DBHelper class. Used Singleton design pattern here.
+ * @author Shivani Arbat
+ * @version 1.0
+ */
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -33,7 +39,7 @@ public class GeographyQuizDBHelper extends SQLiteOpenHelper {
     public static final String QUIZ_SCORE = "score";
 
 
-    /* A Create table SQL statement to create a table for job leads.
+    /* A Create table SQL statement to create a table for COUNTRY_CONTINENT_NEIGHBOUR.
      Note that _id is an auto increment primary key, i.e. the database will
      automatically generate unique id values as keys. */
     private static final String CREATE_COUNTRY_CONTINENT_NEIGHBOUR =
